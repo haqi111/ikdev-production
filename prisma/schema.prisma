@@ -1,0 +1,90 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+model Users {
+  id            String         @id @default(uuid())
+  nra           String?        @unique
+  nama          String
+  nim           String         @unique
+  no_telp       String
+  email         String
+  password      String
+  jenis_kelamin Gender?
+  agama         Religion?
+  fakultas      String
+  prodi         String
+  angkatan      String
+  status        Status?
+  image         String?
+  created_at    DateTime       @default(now())
+  updated_at    DateTime?      @updatedAt
+  hashRt        String?
+  passwordreset PasswordReset? @relation("UsersToPasswordReset")
+}
+
+model Candidate {
+  id            String           @id @default(uuid())
+  email         String
+  nama          String
+  no_telp       String
+  jenis_kelamin Gender?
+  agama         Religion?
+  nim           String         @unique
+  prodi         String
+  fakultas      Faculty
+  angkatan      String
+  image         String?
+  lk1           Float?
+  lk2           Float?
+  sc            Float?
+  keaktifan     Float?
+  rerata        Float?
+  approval      Approval?
+  description   String?
+  created_at    DateTime       @default(now())
+  updated_at    DateTime?      @updatedAt
+}
+
+model PasswordReset {
+  token      String   @id @db.Char(21)
+  user_id    String   @unique
+  validUntil DateTime
+  user       Users    @relation("UsersToPasswordReset", fields: [user_id], references: [id])
+
+  @@map("password_reset")
+}
+
+enum Approval {
+  Accepted
+  Rejected
+  OnProgres
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum Faculty {
+  FTI
+  FMB
+}
+
+enum Religion {
+  Islam
+  Kristen
+  Katolik
+  Hindu
+  Budha
+  Other
+}
+
+enum Status {
+  Active
+  Inactive
+}
